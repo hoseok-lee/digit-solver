@@ -7,17 +7,17 @@ class Solution:
 
     ops = [ '+', '-', '*', '/' ]
 
-    def __init__(self, digits: tuple):
+    def __init__(self, n: int):
 
-        self.digits = digits
+        self.digits = tuple(map(int, str(n)))
         self.ptable = defaultdict(lambda: defaultdict(set))
 
 
-    def solve(self, total: int) -> Generator[str]:
+    def solve(self, t: int) -> Generator[str]:
 
         # Dynamic programming
         [ _ for _ in self.expand_recurse(available_digits = self.digits) ]
-        return self.ptable[self.digits][total]
+        return self.ptable[self.digits][t]
 
 
     def store(self, digits, exp):
@@ -79,6 +79,5 @@ class Solution:
         return exp
 
 
-digits = ( 5, 4, 4, 3 )
-solution = Solution(digits)
+solution = Solution(n = 5443)
 print(solution.solve(10))
