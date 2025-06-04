@@ -74,19 +74,26 @@ class Solution:
 
     def solve(self, t: int) -> Generator[str]:
 
+        def replacement(expr, symbol_map):
+            for key, val in symbol_map.items():
+                expr = expr.replace(str(key), str(val))
+
+            return expr
+
+
         # Dynamic programming
         [ _ for _ in self.expand_recurse(symbol_map = self.symbol_map) ]
         for solution in self.ptable[self.symbol_map.symbols][t]:
-            yield solution
+            yield replacement(str(solution), self.symbol_map)
 
 
-    def store(self, symbols, exp):
+    def store(self, symbols, expr):
 
         # Substitute expression for unevaluated integers
         # Evaluate it once storing in ptable
-        val = exp.subs(self.symbol_map.items())
-        self.ptable[symbols][val.doit()].add(exp)
-        return val, exp
+        val = expr.subs(self.symbol_map.items())
+        self.ptable[symbols][val.doit()].add(expr)
+        return val, expr
 
 
     def expand_recurse(
@@ -95,9 +102,9 @@ class Solution:
     ) -> Generator[int]:
 
         if symbol_map.symbols in self.ptable.keys():
-            for val, exps in self.ptable[symbol_map.symbols].items():
-                for exp in exps:
-                    yield val, exp
+            for val, exprs in self.ptable[symbol_map.symbols].items():
+                for expr in exprs:
+                    yield val, expr
 
             return
 
@@ -116,7 +123,7 @@ class Solution:
                 lhs = symbol_map[:i + 1]
                 rhs = symbol_map[i + 1:]
 
-                for l_exp, r_exp in product(
+                for l_expr, r_expr in product(
                     self.expand_recurse(lhs),
                     self.expand_recurse(rhs)
                 ):
@@ -126,7 +133,7 @@ class Solution:
                         try:
                             yield self.store(
                                 symbol_map.symbols,
-                                ex(l_exp[1], r_exp[1])
+                                ex(l_expr[1], r_expr[1])
                             )
 
                         except ZeroDivisionError:
