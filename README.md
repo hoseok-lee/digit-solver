@@ -17,7 +17,7 @@ The solution ```(5 - 4) - (4 - 3) = 0``` should not be considered as it is mathe
 # CLI Usage
 
 ```
-usage: solution.py [-h] n [t]
+usage: python solution.py [-h] n [t]
 
 positional arguments:
   n           number for digit-based arithematic combination
