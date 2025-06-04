@@ -1,8 +1,9 @@
 from collections import defaultdict
-from typing import Generator
+from typing import Generator, Optional
 from itertools import product
-from sympy import Symbol, UnevaluatedExpr
+from sympy import Symbol, UnevaluatedExpr, oo, zoo, nan
 import operator
+import matplotlib.pyplot as plt
 
 
 class SymbolMap:
@@ -53,8 +54,6 @@ class SymbolMap:
         return str(self.symbol_map)
 
 
-
-
 class Solution:
 
     ops = [
@@ -65,14 +64,13 @@ class Solution:
     ]
 
 
-
     def __init__(self, n: int):
 
         self.symbol_map = SymbolMap(data = list(map(int, str(n))))
         self.ptable = defaultdict(lambda: defaultdict(set))
 
 
-    def solve(self, t: int) -> Generator[str]:
+    def solve(self, t: Optional[int] = None) -> Generator[str] | defaultdict:
 
         def replacement(expr, symbol_map):
             for key, val in symbol_map.items():
@@ -83,15 +81,25 @@ class Solution:
 
         # Dynamic programming
         [ _ for _ in self.expand_recurse(symbol_map = self.symbol_map) ]
-        for solution in self.ptable[self.symbol_map.symbols][t]:
-            yield replacement(str(solution), self.symbol_map)
+        if t is not None:
+            for solution in self.ptable[self.symbol_map.symbols][t]:
+                yield replacement(str(solution), self.symbol_map)
+
+        else:
+            # Return distribution
+            yield {
+                key: len(val)
+                for key, val in self.ptable[self.symbol_map.symbols].items()
+            }
 
 
     def store(self, symbols, expr):
 
         # Substitute expression for unevaluated integers
         # Evaluate it once storing in ptable
-        val = expr.subs(self.symbol_map.items())
+        val = expr.subs(self.symbol_map.items()).doit()
+        if val.has(oo, -oo, zoo, nan):
+            raise ZeroDivisionError
         self.ptable[symbols][val.doit()].add(expr)
         return val, expr
 
@@ -140,12 +148,29 @@ class Solution:
                             pass
 
 
-solution = Solution(n = 5443)
-print(list(solution.solve(0)))
+# Parse arguments
+if __name__ == "__main__":
 
-# A = ['5 * ((4 - 4) * 3 / 4)', '5 * (4 - 4) * 3 / 4']
-# A = ['5 - (4 - 6 * (3 - 5))']
+    import argparse
 
-# for exp in A:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("n", help="number for digit-based arithematic combination", type=int)
+    parser.add_argument("t", nargs="?", help="target result for computation; if empty, distribution of solutions will be plotted as a histogram", type=int)
+    args = parser.parse_args()
 
-#     print(Simplifier(exp).simplify())
+    solution = Solution(n = args.n)
+    solutions = list(solution.solve(args.t))
+
+    if solutions == []:
+        print(f"No solutions found for n = {args.n}, t = {args.t}.")
+
+    else:
+        # Distribution found
+        if isinstance(solutions[0], dict):
+            formatted = [ int(k) for k, v in solutions[0].items() for _ in range(v) ]
+            plt.hist(formatted)
+            plt.savefig("dist.pdf")
+
+        else:
+            for i, expression in enumerate(solutions):
+                print(f"Solution {i + 1}: {expression}")

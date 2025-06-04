@@ -12,4 +12,17 @@ There are three unique possible solutions.
 2) ```5 * (4 - 4) * 3 = 0```
 3) ```5 * (4 - 4) / 3 = 0```
 
-The solution ```(5 - 4) - (4 - 3) = 0``` should not be considered as it is mathematically equivalent to solution 1, once the parantheses have been expanded.
+The solution ```(5 - 4) - (4 - 3) = 0``` should not be considered as it is mathematically equivalent to solution 1, once the parantheses have been expanded. Therefore, uniqueness is defined by the order of operations used once the expression has been simplified as much as possible.
+
+# CLI Usage
+
+```
+usage: solution.py [-h] n [t]
+
+positional arguments:
+  n           number for digit-based arithematic combination
+  t           target result for computation; if empty, distribution of solutions will be plotted as a histogram
+
+options:
+  -h, --help  show this help message and exit
+```
