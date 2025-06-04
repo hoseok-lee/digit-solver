@@ -21,7 +21,7 @@ usage: solution.py [-h] n [t]
 
 positional arguments:
   n           number for digit-based arithematic combination
-  t           target result for computation; if empty, distribution of solutions will be plotted as a histogram
+  t           target result for computation; if empty, plot distribution of solutions
 
 options:
   -h, --help  show this help message and exit

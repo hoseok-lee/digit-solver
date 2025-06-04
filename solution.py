@@ -155,7 +155,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("n", help="number for digit-based arithematic combination", type=int)
-    parser.add_argument("t", nargs="?", help="target result for computation; if empty, distribution of solutions will be plotted as a histogram", type=int)
+    parser.add_argument("t", nargs="?", help="target result for computation; if empty, plot distribution of solutions", type=int)
     args = parser.parse_args()
 
     solution = Solution(n = args.n)
